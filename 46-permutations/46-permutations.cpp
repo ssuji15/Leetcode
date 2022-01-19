@@ -8,7 +8,7 @@ public:
         nums[j] = temp;
     }
     
-    void solve(int idx, vector<int> nums) {
+    void solve(int idx, vector<int> &nums) {
         
         if(idx == nums.size()) {
             result.push_back(nums);
