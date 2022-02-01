@@ -18,32 +18,32 @@ public:
 
 class Solution {
 public:
-    Node* connect(Node* root) {
-        if(root == NULL) return root;
-        queue<Node *> q;
-        q.push(root);
-        
-        while(!q.empty()) {
-            Node *prev = NULL;
-            queue<Node *> temp;
-            while(!q.empty()) {
-                Node *curr = q.front();
-                q.pop();
-                
-                if(prev != NULL) {
-                    prev->next = curr;
-                }
-                if(curr->left != NULL) {
-                    temp.push(curr->left);
-                }
-                
-                if(curr->right != NULL) {
-                    temp.push(curr->right);
-                }
-                
-                prev = curr;
+    Node *leftMost, *prev;
+    void process(Node *root) {
+        if(root != NULL) {
+            if(prev != NULL) {
+                prev->next = root;
             }
-            q = temp;
+            else {
+                leftMost = root;
+            }
+            prev = root;
+        }
+    }
+    Node* connect(Node* root) {
+       
+        leftMost = root;
+        while(leftMost != NULL) {
+            Node *curr = leftMost;
+            leftMost = NULL;
+            prev = NULL;
+            
+            while(curr != NULL) {
+                process(curr->left);
+                process(curr->right);
+                curr = curr->next;
+            }
+            
         }
         return root;
     }
