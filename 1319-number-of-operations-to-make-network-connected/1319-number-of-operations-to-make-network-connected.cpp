@@ -27,19 +27,26 @@ public:
     }
     
     int makeConnected(int n, vector<vector<int>>& connections) {
-        if(connections.size() < n-1) return -1;
         parent = vector<int>(n,-1);
-        int count = 0;
+        int extraEdges = 0, treeEdges = 0;
         for(int i=0;i<connections.size();i++) {
             int x = connections[i][0];
             int y = connections[i][1];
-            weightedUnion(x,y);
+            if(find(x) == find(y)) {
+                extraEdges++;
+            }
+            else {
+                weightedUnion(x,y);
+                treeEdges++;
+            }
+            
         }
 
-        for(int i=0;i<n;i++) {
-            if(parent[i] < 0) count++;
-        }
+        int noOfNodesNotConnected = n - (treeEdges+1);
 
-        return count-1;
+        if(extraEdges >= noOfNodesNotConnected) {
+            return noOfNodesNotConnected;
+        }
+        return -1;
     }
 };
