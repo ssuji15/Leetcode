@@ -1,25 +1,27 @@
-using namespace std;
 class Solution {
 public:
     int maximalSquare(vector<vector<char>>& matrix) {
-        bool foundOne = false;
-        vector<vector<int>> dp(matrix.size(), vector<int>(matrix[0].size(), 0));
+        vector<vector<int>> dp(matrix.size(),vector<int>(matrix[0].size(), 0));
+        int ans = 0;
         for(int i=0;i<matrix.size();i++) {
             for(int j=0;j<matrix[0].size();j++) {
-                dp[i][j] = matrix[i][j] - '0';
-                if(dp[i][j] == 1) foundOne = true;
-            }
-        }
-        int size = 0;
-        for(int i=1;i<matrix.size();i++) {
-            for(int j=1;j<matrix[0].size();j++) {
-                if(dp[i][j] == 1) {
-                    dp[i][j] = min(dp[i][j-1], min(dp[i-1][j-1], dp[i-1][j])) + 1;
+                if(matrix[i][j] == '0') {
+                    continue;
                 }
-                size = max(size, dp[i][j]);
+                int value1 = 0, value2 = 0, value3 = 0;
+                if(i-1 >= 0) {
+                    value1 = dp[i-1][j];
+                }
+                if(j-1 >= 0) {
+                    value2 = dp[i][j-1];
+                }
+                if(i-1>=0 && j-1>=0) {
+                    value3 = dp[i-1][j-1];
+                }
+                dp[i][j] = min(value1, min(value2,value3)) + 1;
+                ans = max(ans, dp[i][j]);
             }
         }
-        if(size == 0 && foundOne) return 1;
-        return size * size;
+        return ans*ans;
     }
 };
