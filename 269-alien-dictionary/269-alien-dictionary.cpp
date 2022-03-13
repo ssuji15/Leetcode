@@ -1,73 +1,56 @@
-struct Node {
-    char x;
-    int incomingEdgeCount;
-    vector<char> outGoingNodes;
-    Node(char ch) {
-        this->x = ch;
-        incomingEdgeCount = 0;
-        outGoingNodes = {};
-    }
-};
 class Solution {
 public:
     string alienOrder(vector<string>& words) {
-        unordered_map<char, Node*> chars;
-        
+        unordered_map<char,bool> isPresent;
+        vector<char> allChars;
         for(int i=0;i<words.size();i++) {
             for(int j=0;j<words[i].length();j++) {
-                if(chars.find(words[i][j]) == chars.end()) {
-                    chars[words[i][j]] = new Node(words[i][j]);
+                if(isPresent.find(words[i][j]) == isPresent.end()) {
+                    allChars.push_back(words[i][j]);
+                    isPresent[words[i][j]] = true;
                 }
             }
         }
         
-        for(int i=0;i<words.size()-1;i++) {
-            string word1 = words[i];
-            string word2 = words[i+1];
-            
-            int j;
-            
-            for(j=0;j<word1.length() && j<word2.length();j++) {
-                if(word1[j] != word2[j]) {
-                    chars[word1[j]]->outGoingNodes.push_back(word2[j]);
-                    chars[word2[j]]->incomingEdgeCount++;
-                    break;
-                }
+        unordered_map<char,vector<char>> adjacentNodes;
+        unordered_map<char,int> incomingEdges;
+        for(int i=1;i<words.size();i++) {
+            string word1 = words[i-1];
+            string word2 = words[i];
+            if(word1.compare(word2) == 0) continue;
+            bool notChanged = true;
+            for(int j=0;j<word1.length() && j<word2.length(); j++) {
+                if(word1[j] == word2[j]) continue;
+                adjacentNodes[word1[j]].push_back(word2[j]);
+                incomingEdges[word2[j]]++;
+                notChanged = false;
+                break;
             }
-            
-            if(j!=word1.length() && j==word2.length()) {
-                return "";
-            }
+            if(notChanged && word1.length() > word2.length()) return "";
         }
         
         queue<char> q;
-        
-        for(int i=0;i<26;i++) {
-            if(chars.find(i+'a') != chars.end() && chars[i+'a']->incomingEdgeCount == 0) {
-                q.push(i+'a');
+        string res = "";
+        for(int i=0;i<allChars.size();i++) {
+            if(incomingEdges[allChars[i]] == 0) {
+                q.push(allChars[i]);
             }
         }
-        
-        string res = "";
-        
         while(!q.empty()) {
-            char cur = q.front();
+            char ch = q.front();
             q.pop();
-            
-            res += cur;
-            
-            for(int i=0;i<chars[cur]->outGoingNodes.size();i++) {
-                chars[chars[cur]->outGoingNodes[i]]->incomingEdgeCount--;
-                if(chars[chars[cur]->outGoingNodes[i]]->incomingEdgeCount == 0) {
-                    q.push(chars[cur]->outGoingNodes[i]);
+            res += ch;
+            for(int i=0;i<adjacentNodes[ch].size();i++) {
+                char newCh = adjacentNodes[ch][i];
+                incomingEdges[newCh]--;
+                if(incomingEdges[newCh] == 0) {
+                    q.push(newCh);
                 }
             }
         }
-        
-        if(res.length() == chars.size()) {
-            return res;
+        if(res.length() != allChars.size()) {
+            return "";
         }
-        return "";
-        
+        return res;
     }
 };
