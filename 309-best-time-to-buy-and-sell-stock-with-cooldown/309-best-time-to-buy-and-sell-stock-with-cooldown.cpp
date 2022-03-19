@@ -1,13 +1,13 @@
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        int maxWith0 = 0, maxWith1 = -prices[0], maxWithPrev0 = 0;
+        vector<int> withOneStock(prices.size(), 0);
+        vector<int> withZeroStock(prices.size(), 0);
+        withOneStock[0] = -prices[0];
         for(int i=1;i<prices.size();i++) {
-            int temp = maxWith0;
-            maxWith0 = max(maxWith0, maxWith1+prices[i]);
-            maxWith1 = max(maxWith1, maxWithPrev0 - prices[i]);
-            maxWithPrev0 = temp;
+            withZeroStock[i] = max(withZeroStock[i-1], prices[i] + withOneStock[i-1]);
+            withOneStock[i] = max(withOneStock[i-1], i-2 >= 0 ? withZeroStock[i-2]-prices[i] : 0-prices[i]);
         }
-        return maxWith0;
+        return withZeroStock[prices.size()-1];
     }
 };
