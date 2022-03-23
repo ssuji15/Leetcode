@@ -1,52 +1,46 @@
 class Solution {
 public:
-    vector<int> parent;
-    
-    int find(int x) {
-        int par = parent[x];
-        if(par >= 0) {
-            int newPar = find(par);
-            parent[x] = newPar;
-            return newPar;
-        }
-        return x;
-    }
-    
-    void weightedUnion(int x, int y) {
-        int parent_x = find(x);
-        int parent_y = find(y);
-        if(parent_x == parent_y) return;
-        if(parent[parent_x] <= parent[parent_y]) {
-            parent[parent_x] += parent[parent_y];
-            parent[parent_y] = parent_x;
+    vector<int> parents;
+    void weightedUnion(int idx1, int idx2) {
+        int parent1 = find(idx1);
+        int parent2 = find(idx2);
+        if(parent1 == parent2) return;
+        if(parents[parent1] <= parents[parent2]) {
+            parents[parent1] += parents[parent2];
+            parents[parent2] = parent1;
         }
         else {
-            parent[parent_y] += parent[parent_x];
-            parent[parent_x] = parent_y;
+            parents[parent2] += parents[parent1];
+            parents[parent1] = parent2;
         }
+    }
+    
+    int find(int idx) {
+        if(parents[idx] >= 0) {
+            int parent = find(parents[idx]);
+            parents[idx] = parent;
+            return parent;
+        }
+        return idx;
     }
     
     int makeConnected(int n, vector<vector<int>>& connections) {
-        parent = vector<int>(n,-1);
-        int extraEdges = 0, treeEdges = 0;
+        int count = 0, unconnected=0;
+        parents = vector<int>(n,-1);
         for(int i=0;i<connections.size();i++) {
-            int x = connections[i][0];
-            int y = connections[i][1];
-            if(find(x) == find(y)) {
-                extraEdges++;
+            if(find(connections[i][0]) == find(connections[i][1])) {
+                count++;
             }
-            else {
-                weightedUnion(x,y);
-                treeEdges++;
+            weightedUnion(connections[i][0], connections[i][1]);
+        }
+        
+        for(int i=0;i<n;i++) {
+            if(parents[i] < 0) {
+                unconnected++;
             }
-            
         }
-
-        int noOfNodesNotConnected = n - (treeEdges+1);
-
-        if(extraEdges >= noOfNodesNotConnected) {
-            return noOfNodesNotConnected;
-        }
-        return -1;
+        
+        if(unconnected-1 > count) return -1;
+        return unconnected-1;
     }
 };
