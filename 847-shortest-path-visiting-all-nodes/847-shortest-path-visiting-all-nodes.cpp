@@ -20,6 +20,7 @@ public:
                 int newMask = mask | (1 << newNode);
                 if(visited.find(newNode) == visited.end()
                    || visited[newNode].find(newMask) == visited[newNode].end()) {
+                    if(newMask == endMask) return cost+1;
                     visited[newNode][newMask] = true;
                     q.push({newNode, newMask, cost+1});
                 }
