@@ -11,11 +11,11 @@ public:
                     val2 = grid[i][j-1];
                 }
                 
-                if(val1 == INT_MAX && val2 == INT_MAX) continue;
-                grid[i][j] += min(val1, val2);
+                int finalVal = min(val1, val2);
+                if(finalVal == INT_MAX) finalVal = 0;
+                grid[i][j] += finalVal;
             }
         }
-        
         return grid[grid.size()-1][grid[0].size()-1];
     }
 };
