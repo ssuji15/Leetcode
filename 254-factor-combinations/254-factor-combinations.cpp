@@ -1,30 +1,24 @@
 class Solution {
 public:
-    vector<vector<int>> result;
-    void findFactors(int i, int factor, vector<int> &temp) {
-
-        if(factor == 1) {
-            result.push_back(temp);
-            return;
-        }
-        
-        for(int j=i;j<=factor;j++) {
-            if(factor%j == 0) {
-                temp.push_back(j);
-                findFactors(j, factor/j, temp);
-                temp.pop_back();
-            }
-        }
-    }
-    
+    unordered_map<int, vector<vector<int>>> cache;
     vector<vector<int>> getFactors(int n) {
-        result = {};
-        for(int i=2;i<n;i++) {
-            if(n%i == 0) {
-                vector<int> temp = {i};
-                findFactors(i,n/i,temp);
+        if(n <= 3) return {};
+        if(cache.find(n) != cache.end()) return cache[n];
+        int val = ceil(sqrt(n));
+        set<vector<int>> result;
+        for(int i=2;i<=val;i++) {
+            if(n%i==0) {
+                vector<vector<int>> temp = getFactors(n/i);
+                temp.push_back({n/i});
+                for(int j=0;j<temp.size();j++) {
+                    temp[j].push_back(i);
+                    sort(temp[j].begin(), temp[j].end());
+                    result.insert(temp[j]);
+                }
             }
         }
-        return result;
+        vector<vector<int>> res(result.begin(), result.end());
+        cache[n] = res;
+        return res;
     }
 };
