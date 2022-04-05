@@ -1,24 +1,26 @@
 class Solution {
 public:
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        vector<vector<vector<int>>> comb(target+1);
+    void solve(int idx, int target, vector<int> &temp, vector<vector<int>> &result, vector<vector<bool>> &visited, vector<int> &candidates) {
         
-        comb[0] = {{}}; 
-        
-        for(int i=0;i<candidates.size();i++) {
-            int value = candidates[i];
-            for(int j=1;j<=target;j++) {
-                if(j-value >= 0) {
-                    vector<vector<int>> temp = comb[j-value];
-                    for(int k=0;k<temp.size();k++) {
-                        vector<int> temp1 = temp[k];
-                        temp1.push_back(value);
-                        comb[j].push_back(temp1);
-                    }
-                }
-            }
+        if(target == 0) {
+            result.push_back(temp);
+            return;
         }
         
-        return comb[target];
+        if(target < 0 || idx == candidates.size()) return;
+    
+        for(int i=idx;i<candidates.size();i++) {
+            temp.push_back(candidates[i]);
+            solve(i, target-candidates[i], temp, result, visited, candidates);
+            temp.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+
+        vector<vector<int>> result;
+        vector<int> temp;
+        vector<vector<bool>> visited(candidates.size(), vector<bool>(target+1, false));
+        solve(0,target,temp,result, visited, candidates);
+        return result;
     }
 };
