@@ -1,65 +1,44 @@
 class Solution {
 public:
-    bool placeQueen(int i, int j, vector<string> &board, int n) {
-        for(int k=0;k<n;k++) {
-            if(board[i][k] == 'Q') return false;
+    vector<vector<string>> result;
+    bool checkDiagonals(int row, int col, vector<string> &board, int n) {
+        int tempRow = row, tempCol = col;
+        while(tempRow >= 0 && tempCol >= 0 && board[tempRow][tempCol] == '.') {
+            tempRow--;
+            tempCol--;
         }
         
-        for(int k=0;k<n;k++) {
-            if(board[k][j] == 'Q') return false;
-        }
-        int tempI = i, tempJ = j;
-        while(tempI >= 0 && tempJ >= 0) {
-            if(board[tempI][tempJ] == 'Q') return false;
-            tempI--;
-            tempJ--;
-        }
-        tempI = i;
-        tempJ = j;
-        while(tempI < n && tempJ < n) {
-            if(board[tempI][tempJ] == 'Q') return false;
-            tempI++;
-            tempJ++;
+        if(tempRow >= 0 && tempCol >= 0) return true;
+        tempRow = row, tempCol = col;
+        while(tempRow >= 0 && tempCol < n && board[tempRow][tempCol] == '.') {
+            tempRow--;
+            tempCol++;
         }
         
-        tempI = i;
-        tempJ = j;
-        while(tempI >= 0 && tempJ < n) {
-            if(board[tempI][tempJ] == 'Q') return false;
-            tempI--;
-            tempJ++;
-        }
+        if(tempRow >= 0 && tempCol < n) return true;
         
-        tempI = i;
-        tempJ = j;
-        while(tempI < n && tempJ >= 0) {
-            if(board[tempI][tempJ] == 'Q') return false;
-            tempI++;
-            tempJ--;
-        }
-        
-        return true;
+        return false;
     }
-    void solve(int i, vector<string> &board, int n, vector<vector<string>> &result) {
-        if(i == n) {
+    void solve(int curRow, vector<bool> &cols, vector<string> &board,int n) {
+        if(curRow == n) {
             result.push_back(board);
             return;
         }
+        
         for(int j=0;j<n;j++) {
-            if(placeQueen(i,j,board,n)) {
-                board[i][j] = 'Q';
-                solve(i+1, board, n, result);
-                board[i][j] = '.';
+            if(!cols[j] && !checkDiagonals(curRow, j, board, n)) {
+                board[curRow][j] = 'Q';
+                cols[j] = true;
+                solve(curRow+1, cols, board, n);
+                board[curRow][j] = '.';
+                cols[j] = false;
             }
         }
     }
     vector<vector<string>> solveNQueens(int n) {
-        vector<vector<string>> result;
-        vector<string> board;
-        for(int i=0;i<n;i++) {
-            board.push_back(string(n,'.'));
-        }
-        solve(0,board,n,result);
+        vector<bool> cols(n, false);
+        vector<string> board(n, string(n,'.'));
+        solve(0,cols,board,n);
         return result;
     }
 };
