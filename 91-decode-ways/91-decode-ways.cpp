@@ -1,37 +1,28 @@
 class Solution {
 public:
-    unordered_map<int,int> cache;
-    int decode(int idx, string &s) {
-        if(idx >= s.length()) {
-            return 1;
+    vector<int> cache;
+    int numDecodings(int idx, string &s) {
+        if(idx >= s.length()) return 1;
+        if(cache[idx] != -1) return cache[idx];
+        
+        int ans = 0;
+        int num1 = s[idx]-'0';
+
+        if(num1 >= 1 && num1 <= 9) {
+            ans = numDecodings(idx+1, s);
         }
         
-        if(cache.find(idx) != cache.end()) {
-            return cache[idx];
-        }
-        
-        int num = s[idx] - '0', ans = 0;
-        if(num >= 1  && num <= 9) {
-            ans += decode(idx+1, s);
-        }
-        else {
-            cache[idx] = 0;
-            return 0;
-        }
-        
-        if(idx + 1 < s.length()) {
-            num = num * 10 + (s[idx+1] - '0');
-            
-            if(num >= 1 && num <= 26) {
-                ans += decode(idx+2, s);
+        if(idx+1 < s.length()) {
+            int num2 = (s[idx]-'0')*10 + s[idx+1]-'0';
+            if(num2 >= 10 && num2 <= 26) {
+                ans += numDecodings(idx+2, s);
             }
         }
-        
         cache[idx] = ans;
         return ans;
     }
     int numDecodings(string s) {
-        cache = {};
-        return decode(0,s);
+        cache = vector<int>(s.length(), -1);
+        return numDecodings(0,s);
     }
 };
