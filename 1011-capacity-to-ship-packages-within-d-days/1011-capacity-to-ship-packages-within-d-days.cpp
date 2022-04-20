@@ -12,6 +12,7 @@ public:
                 sum = weights[i];
                 count++;
             }
+            if(count > days) return false;
         }
         return count <= days && sum <= maxWeight;
     }
