@@ -1,25 +1,13 @@
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
-        vector<pair<int,int>> numbers;
+        unordered_map<int,int> cache;
         for(int i=0;i<nums.size();i++) {
-            numbers.push_back({nums[i], i});
-        }
-        
-        sort(numbers.begin(), numbers.end());
-        
-        int start = 0, end = numbers.size()-1;
-        while(start < end) {
-            int sum = numbers[start].first + numbers[end].first;
-            if(sum == target) {
-                return {numbers[start].second, numbers[end].second};
+            int secondNum = target-nums[i];
+            if(cache.find(secondNum) != cache.end()) {
+                return {cache[secondNum], i};
             }
-            else if(sum < target) {
-                start++;
-            }
-            else {
-                end--;
-            }
+            cache[nums[i]] = i;
         }
         return {-1,-1};
     }
